@@ -1,24 +1,16 @@
 'use strict';
 
-/**
- * 
- * Lambda Function for signing clients and generating JWT token for them. This is the server, which is
- * acessible to the clients for signin up, and is the only service available for them without token
- * authorization
- * 
- * @param {API Gateway Event Object} event Object related to the request being sent through the API Gateway Proxy
- * @param {Env Runtime Variables / Object} context Objects related to the runtime env of the server, lambda is running within
- * 
- */
+const crypto = require('crypto');
+const { S3, PutObjectCommand } = require("@aws-sdk/client-s3");
+
 module.exports.app = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
+    
     let clientImageFilePath;
 
     try {
-        const { S3, PutObjectCommand } = require("@aws-sdk/client-s3");
         const region = 'us-east-2';
         const S3Client = new S3(region);
-        const crypto = require('crypto');
 
         const Controller = require('./controller')({S3Client, PutObjectCommand});
         const clientImageController = Controller.clientImageController;
